@@ -25,6 +25,8 @@ def scrape_event(id,url):
     title = tree.xpath('//h1[@class="page-header"]/text()')[0]
     description = tree.xpath('//p[@class="event-summary"]/text()')
     raw_date = tree.xpath('//p[@class="event-date"]/text()')[0]
+    event_number = url.rsplit('/',1)[1]
+    id = int(filter(str.isdigit, event_number))
     try:
         date = parse(raw_date)
         date = date.strftime('%Y-%m-%d')
