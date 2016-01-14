@@ -9,17 +9,15 @@ def do_the_scraping():
     page = requests.get('http://www.reading.ac.uk/news-and-events/about-eventlist.aspx')
     tree = html.fromstring(page.text)
     links = tree.xpath('//a[contains(@href,"/about/newsandevents/Events/")]/@href')
-    id = 0
     for link in links:
         url = 'http://www.reading.ac.uk' + link
-        id += 1
         try:
-            scrape_event(id,url)
+            scrape_event(url)
         except:
             "Error scraping event: " + url
         time.sleep(0.5)
 
-def scrape_event(id,url):
+def scrape_event(url):
     page = requests.get(url)
     tree = html.fromstring(page.text)
     title = tree.xpath('//h1[@class="page-header"]/text()')[0]
@@ -55,4 +53,7 @@ def scrape_event(id,url):
     print data
     scraperwiki.sqlite.save(unique_keys = ['id'], data = data)
         
+if scraperwiki.sql.show_tables():
+    scraperwiki.sqlite.execute("DELETE FROM data") #use 'swdata' on Mac, use 'data' on morph.io
+    
 do_the_scraping()
