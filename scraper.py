@@ -16,12 +16,21 @@ def do_the_scraping():
         except:
             "Error scraping event: " + url
         time.sleep(0.5)
+        
+def flatten(nodes, join_char="\n"):
+    return join_char.join(
+        [
+            node.strip() 
+            for node in nodes
+            if node and node.strip != ""
+        ]
+    )
 
 def scrape_event(url):
     page = requests.get(url)
     tree = html.fromstring(page.text)
     title = tree.xpath('//h1[@class="page-header"]/text()')[0]
-    description = tree.xpath('//p[@class="event-summary"]/text()')
+    description = flatten(tree.xpath('//p[@class="event-summary"]/text()'))
     raw_date = tree.xpath('//p[@class="event-date"]/text()')[0]
     event_number = url.rsplit('/',1)[1]
     id = int(filter(str.isdigit, event_number))
@@ -36,7 +45,7 @@ def scrape_event(url):
         venue = location.split(',')[0]
     except:
         venue = location
-    contact = tree.xpath('//p[@class="event-contact"]/text()')
+    contact = flatten(tree.xpath('//p[@class="event-contact"]/text()'))
     
     data = {
         'id': 'uor' + str(id),
